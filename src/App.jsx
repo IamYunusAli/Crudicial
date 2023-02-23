@@ -5,7 +5,8 @@ import './App.css'
 function App() {
   const [users, setUsers] = useState([])
   const [user, setUser] = useState({name:'', age:''})
-useEffect(()=>{
+  const [user2, setUser2]=useState({name:'', age:''})
+  useEffect(()=>{
   getUsers()
 })
 
@@ -37,12 +38,47 @@ useEffect(()=>{
       {...user,
         [e.target.name]: e.target.value})
   }
+
+  const handleChange2 = (e)=>{
+    setUser2((prevData)=>{
+      return{
+        ...prevData,
+        [e.target.name]: e.target.value
+      }
+    })
+  }
+
+  async function updateUser(id) {
+    await myClient
+    .from('Users')
+    .update({id: user2.id, name:user2.name, age:user2.age})
+    .eq('id', id)
+    myClient()
+  }
+
+  const displayUser = (id) => {
+    users.map((user) => {
+      if(user.id === id){
+        setUser2({
+          id: user.id,
+          name: user.name,
+          age: user.age,
+        })
+      }
+    })
+  }
+
   return (
     <div className="w-full m-5">
     <form onSubmit={createUser}>
       <input className='border-2 rounded-lg border-gray px-5 py-2 m-5' type="text" name="name" onChange={handleChange} placeholder="name"/>
-      <input className='border-2 rounded-lg border-gray px-5 py-2 m-5'type="number" name="age" onChange={handleChange} placeholder="age"/>
+      <input className='border-2 rounded-lg border-gray px-5 py-2 m-5' type="number" name="age" onChange={handleChange} placeholder="age"/>
       <button className='rounded-lg px-9 py-2 m-3 bg-green-400' type="submit">Add</button>
+    </form>
+    <form onSubmit={()=>(updateUser(user2.id))}>
+      <input className='border-2 rounded-lg border-gray px-5 py-2 m-5' type="text" name="name" onChange={handleChange2} placeholder="name" defaultValue={user2.name}/>
+      <input className='border-2 rounded-lg border-gray px-5 py-2 m-5'type="number" name="age" onChange={handleChange2} placeholder="age" defaultValue={user2.age}/>
+      <button className='rounded-lg px-9 py-2 m-3 bg-blue-400' type="submit">update</button>
     </form>
     <div className='overflow-hidden rounded-lg border border-gray-200 shadow-md m-5'>
 
@@ -61,7 +97,10 @@ useEffect(()=>{
           <td className='px-6 py-4'>{user.id}</td>
           <td className='px-6 py-4'>{user.name}</td>
           <td className='px-6 py-4'>{user.age}</td>
-          <td><button className='rounded-lg px-9 py-2 m-3 bg-red-400 text-black text-md' onClick={()=>(deleteUser(user.id))}>Delete</button>
+          <td>
+            <button className='rounded-lg px-9 py-2 m-3 bg-red-400 text-black text-md' onClick={()=>(deleteUser(user.id))}>Delete</button>
+            <button className='rounded-lg px-9 py-2 m-3 bg-yellow-300 text-black text-md' onClick={()=>(displayUser(user.id))}>Edit</button>
+
           </td>
         </tr>))
       }
