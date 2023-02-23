@@ -1,11 +1,10 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
 import { myClient } from './createClient'
 import './App.css'
 
 function App() {
   const [users, setUsers] = useState([])
-
+  const [user, setUser] = useState({name:'', age:''})
 useEffect(()=>{
   getUsers()
 })
@@ -17,8 +16,28 @@ useEffect(()=>{
     setUsers(data)
   }
 
+  async function createUser(e) {
+    e.preventDefault()
+    await myClient
+    .from('Users')
+    .insert({name:user.name, age:user.age})
+    getUsers()
+  }
+
+  const handleChange = (e) => {
+    setUser(
+      {...user,
+        [e.target.name]: e.target.value})
+  }
   return (
+    <div className="w-full m-5">
+    <form onSubmit={createUser}>
+      <input className='border-2 rounded-lg border-gray px-5 py-2 m-5' type="text" name="name" onChange={handleChange} placeholder="name"/>
+      <input className='border-2 rounded-lg border-gray px-5 py-2 m-5'type="number" name="age" onChange={handleChange} placeholder="age"/>
+      <button className='rounded-lg px-9 py-2 m-3 bg-green-400' type="submit">Add</button>
+    </form>
     <div className='overflow-hidden rounded-lg border border-gray-200 shadow-md m-5'>
+
       <table className='w-full border-collapse bg-white text-left text-sm text-gray-500'>
       <thead className='bg-gray-50'>
       <tr>
@@ -40,6 +59,7 @@ useEffect(()=>{
       }
       </tbody>
     </table>
+    </div>
     </div>
   )
 }
