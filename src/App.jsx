@@ -24,6 +24,14 @@ useEffect(()=>{
     getUsers()
   }
 
+  async function deleteUser(id) {
+    await myClient
+    .from('Users')
+    .delete()
+    .match({id})
+    getUsers()
+  }
+
   const handleChange = (e) => {
     setUser(
       {...user,
@@ -53,7 +61,7 @@ useEffect(()=>{
           <td className='px-6 py-4'>{user.id}</td>
           <td className='px-6 py-4'>{user.name}</td>
           <td className='px-6 py-4'>{user.age}</td>
-          <td>
+          <td><button className='rounded-lg px-9 py-2 m-3 bg-red-400 text-black text-md' onClick={()=>(deleteUser(user.id))}>Delete</button>
           </td>
         </tr>))
       }
